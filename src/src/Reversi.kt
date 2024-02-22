@@ -1,3 +1,5 @@
+
+//------------BOARD---------------
 fun initializeBoard(): MutableMap<Pair<Int, Int>, String> {
 
     val reversi = mutableMapOf<Pair<Int, Int>, String>()
@@ -30,80 +32,81 @@ fun printBoard(board: Map<Pair<Int, Int>, String>) {
 }
 
 //--------------PLAYERS---------------
-var player1name = println("Enter player 1 name: ")
-var player1 = readln()
-var plazer2name = println("Enter player Two name: ")
-var player2 = readln()
+//var player1name = println("Enter player 1 name: ")
+var player1 = "+"
+//var plazer2name = println("Enter player Two name: ")
+var player2 = "="
+fun switchPlayer() {
+    currentPlayer = if (currentPlayer == player1) player2 else player1
+}
+
 
 val reversi = initializeBoard()
 
-// making moves and checking if space is free
-fun move(player: String){
 
-    println("$player, make your move")
-    println("give x:")
-    var x = readln().toInt()
-    println("give y:")
-    var y = readln().toInt()
-    var xy = ""
-    if (player === player1) {
-        if (reversi[Pair(x, y)] === "-" &&
-            reversi[Pair(x, y + 1)] === "=" || reversi[Pair(x + 1, y)] === "=" || reversi[Pair(x + 1, y + 1)] === "="
-            || reversi[Pair(x, y - 1)] === "=" || reversi[Pair(x - 1, y)] === "=" || reversi[Pair(x - 1, y - 1)] === "="
-        ) {
-            reversi[Pair(x, y)] = "+"
-            //xy = "+"
-            gameplay1(x, y)
-        } else {
-            println("Invalid, you lost your move!")
-            Thread.sleep(1000L)
-        }
-    } else if (player === player2) {
-        if (reversi[Pair(x, y)] === "-" &&
-            reversi[Pair(x, y + 1)] === "+" || reversi[Pair(x + 1, y)] === "+" || reversi[Pair(x + 1, y + 1)] === "+" ||
-            reversi[Pair(x, y - 1)] === "+" || reversi[Pair(x - 1, y)] === "+" || reversi[Pair(x - 1, y - 1)] === "+"
-        ) {
-            reversi[Pair(x, y)] = "="
-            //xy = "="
-            gameplay2(x, y)
-        } else {
-            println("Invalid, you lost your move!")
-            Thread.sleep(1000L)
-        }
-    }
-    //return xy
-
-}
-
-fun gameplay1(row: Int, col: Int) {
-    for (col in 0 until 8) {
-        if (reversi[Pair(row, col)] === "=") {
-            reversi[Pair(row, col)] = "+"
-        }
-    }
+var currentPlayer = player1
+//---------------------VALID MOVES------------------------
+// valid move condition, checks if there are any on the board
+fun hasAMove(board: Map<Pair<Int, Int>, String>, player: String): Boolean {
     for (row in 0 until 8) {
-        if (reversi[Pair(row, col)] === "=") {
-            reversi[Pair(row, col)] = "+"
+        for (column in 0 until 8) {
+            if (hasValidMove(board, row, column)) {
+                return true
+            }
         }
-    }//vorsicht
-  // while(reversi[Pair(row+1, col)] === "="){
-    //   reversi[Pair(row+1, col)] = "+"
+    }
+    return false
+}
+
+// defines valid move based on cur player and readln position
+fun hasValidMove(board: Map<Pair<Int, Int>, String>, x: Int, y: Int): Boolean {
+    if (x < 0 || x >= 8 || y < 0 || y >= 8 || board[Pair(x, y)] != "-") {
+        return false
+    }
+    return true
+}
+//-------POINTS------
+fun countPoints(board: Map<Pair<Int, Int>, String>, player: String): Int {
+    return board.count { it.value == player }
+}
+
+//------------MOVE------------
+fun makeMove(board: MutableMap<Pair<Int, Int>, String>, x: Int, y: Int){
+
+
+    board[Pair(x, y)] = currentPlayer
+
+    // check tiles for changes
+    for (dx in -1..1) {
+        for (dy in -1..1) {
+            // Skip the cur position (x, y)
+            if (dx == 0 && dy == 0) continue
+
+            var currentX = x + dx
+            var currentY = y + dy
+            var tilesToFlip = mutableListOf<Pair<Int, Int>>()
+
+            // Check for tiles to flip
+            val opponentPlayer = if (currentPlayer == player1) player2 else player1
+            while (board[Pair(currentX, currentY)] == opponentPlayer) {
+                tilesToFlip.add(Pair(currentX, currentY))
+                currentX += dx
+                currentY += dy
+            }
+
+            // If next tile is the player's tile - flip
+            if (board[Pair(currentX, currentY)] == currentPlayer) {
+                tilesToFlip.forEach { flippedTile ->
+                    board[flippedTile] = currentPlayer
+                }
+            }
+        }
+
 
 
 }
-//++, --, -+,+-
-fun gameplay2(row: Int, col: Int) {
-    for (col in 0 until 8) {
-        if (reversi[Pair(row, col)] === "+") {
-            reversi[Pair(row, col)] = "="
-        }
-    }
-    for (row in 0 until 8) {
-        if (reversi[Pair(row, col)] === "+") {
-            reversi[Pair(row, col)] = "="
-        }
-    }
 }
+
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
@@ -122,16 +125,35 @@ fun main() {
 
     printBoard(reversi)
 
-println("+ starts!")
-    //moves
-while (reversi.containsValue("-")){
-    println(move(player1))
-    printBoard(reversi)
-    println(move(player2))
-    printBoard(reversi)
-}
-    //
-    //
-    //
-    //
+
+    while (true) {
+        // Example usage after getting user input for x and y
+        println("$currentPlayer, make your move")
+        val x = readLine()?.toIntOrNull() ?: continue
+        val y = readLine()?.toIntOrNull() ?: continue
+
+        if (!hasValidMove(reversi, x, y)) {
+            println("Invalid move. Try again.")
+            continue
+        }
+
+        makeMove(reversi, x, y)
+        printBoard(reversi)
+
+        switchPlayer()
+
+        if (!hasAMove(reversi, player1) && !hasAMove(reversi, player2)) {
+            // Game over - count and print points
+            val pointsPlayer1 = countPoints(reversi, player1)
+            val pointsPlayer2 = countPoints(reversi, player2)
+
+            println("Game over! Points:")
+            println("$player1: $pointsPlayer1 points")
+            println("$player2: $pointsPlayer2 points")
+
+            break
+        }
+    }
+
+
 }
