@@ -71,8 +71,9 @@ fun countPoints(board: Map<Pair<Int, Int>, String>, player: String): Int {
 }
 
 //------------MOVE------------
-fun makeMove(board: MutableMap<Pair<Int, Int>, String>, x: Int, y: Int){
-
+fun makeMove(board: MutableMap<Pair<Int, Int>, String>, x: Int, y: Int) {
+    val originalBoard = board.toMutableMap()  // Create a copy of the original board
+    var tilesFlipped = 0
 
     board[Pair(x, y)] = currentPlayer
 
@@ -98,16 +99,40 @@ fun makeMove(board: MutableMap<Pair<Int, Int>, String>, x: Int, y: Int){
             if (board[Pair(currentX, currentY)] == currentPlayer) {
                 tilesToFlip.forEach { flippedTile ->
                     board[flippedTile] = currentPlayer
+                    tilesFlipped++
                 }
             }
         }
+    }
 
-
+    if (tilesFlipped == 0) {
+        println("Invalid move.")
+        board.clear()
+        board.putAll(originalBoard)
+    }
 
 }
+
+fun ifWinner (){
+    println("ifWinner")
+    val pointsPlayer1 = countPoints(reversi, player1)
+    val pointsPlayer2 = countPoints(reversi, player2)
+    println(reversi.containsValue("="))
+    println(reversi.containsValue("+"))
+
+    if (!hasAMove(reversi, player1) && !hasAMove(reversi, player2)){
+        println("Game over! Points:")
+        println("$player1: $pointsPlayer1 points")
+        println("$player2: $pointsPlayer2 points")
+    } else if (reversi.containsValue("+") && reversi.containsValue("-")) {
+        // Game over - count and print points
+        printBoard(reversi)
+    } else {
+        println("Game over! Points:")
+        println("$player1: $pointsPlayer1 points")
+        println("$player2: $pointsPlayer2 points")
+    }
 }
-
-
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 fun main() {
@@ -126,7 +151,7 @@ fun main() {
     printBoard(reversi)
 
 
-    while (true) {
+    while (countPoints(reversi, currentPlayer) > 0) {
         // Example usage after getting user input for x and y
         println("$currentPlayer, make your move")
         val x = readLine()?.toIntOrNull() ?: continue
@@ -138,22 +163,22 @@ fun main() {
         }
 
         makeMove(reversi, x, y)
-        printBoard(reversi)
+
+       printBoard(reversi)
 
         switchPlayer()
 
         if (!hasAMove(reversi, player1) && !hasAMove(reversi, player2)) {
-            // Game over - count and print points
-            val pointsPlayer1 = countPoints(reversi, player1)
-            val pointsPlayer2 = countPoints(reversi, player2)
-
-            println("Game over! Points:")
-            println("$player1: $pointsPlayer1 points")
-            println("$player2: $pointsPlayer2 points")
-
             break
         }
+
+
+
     }
 
+
+    println("Game over! Points:")
+    println("$player1: ${countPoints(reversi, player1)} points")
+    println("$player2: ${countPoints(reversi, player2)} points")
 
 }
