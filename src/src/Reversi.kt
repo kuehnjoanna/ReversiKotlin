@@ -1,12 +1,20 @@
 
 //------------BOARD---------------
+val red = "\u001b[31m"
+val redBackground = "\u001b[41m"
+val greenBackground = "\u001b[42m"
+val green = "\u001b[32m"
+val reset = "\u001b[0m"
+var counter = 0
+val frame = "█▄█▀▀█▄█▀▀█▄█▀▀"
+val frameUp = "█▀▀█▄▄█▀▀█▄▄█▀▀█▄▄"
 fun initializeBoard(): MutableMap<Pair<Int, Int>, String> {
 
     val reversi = mutableMapOf<Pair<Int, Int>, String>()
 //sets a pair for the position on the board and value to "-"
     for (row in 0 until 8) {
         for (column in 0 until 8) {
-            reversi[Pair(row, column)] = "-"
+            reversi[Pair(row, column)] = " - "
         }
     }
 
@@ -15,27 +23,59 @@ fun initializeBoard(): MutableMap<Pair<Int, Int>, String> {
 
 fun printBoard(board: Map<Pair<Int, Int>, String>) {
     // prints the board according to a position with a value - gives the board a look
-    // $col and $row prints number for the board, thosae are additional
-    print("  ")
+    // $col and $row prints number for the board, those are additional
+    print("    ")
     for (col in 0 until 8) {
-        print("$col ")
+        print(" $green $col$reset    ")
     }
-    println("Y")
-    for (row in 0 until 8) {
-        print("$row ")
-        for (column in 0 until 8) {
-            print("${board[Pair(row, column)]} ")
+    println("  Y  ")
+    for (row in 0 until 1) {
+        for (col in 0 until 1) {
+
+            print("  ")
         }
-        println()
+        print(
+            """
+      $red$frameUp$frameUp$frameUp█▀▀█$reset
+        """.trimIndent()
+        )}
+    print("\n")
+    for (row in 1 until 8) {
+        print(
+            """
+              $red█${reset}┌─────┐┌─────┐┌─────┐┌─────┐┌─────┐┌─────┐┌─────┐┌─────┐${red}█$reset
+            $green$row $red█$reset
+        """.trimIndent()
+        )
+
+        counter++
+
+        print("")
+        for (column in 0 until 8) {
+
+            print("|")
+            print(" ${board[Pair(row, column)]} ")
+
+            print("|")
+        }
+        print("$red█$reset")
+        print("\n $red █${reset}└─────┘└─────┘└─────┘└─────┘└─────┘└─────┘└─────┘└─────┘")
+        println("$red█$reset")
+
     }
-    println("X")
+
+
+    print(red + "  $frame$frame$frame█▄█▀▀█▄█▀▀█▄█" + reset)
+
+    println("\nX")
+
 }
 
 //--------------PLAYERS---------------
 //var player1name = println("Enter player 1 name: ")
-var player1 = "+"
-//var plazer2name = println("Enter player Two name: ")
-var player2 = "="
+var player1 = "$redBackground + $reset"
+//var player2name = println("Enter player Two name: ")
+var player2 = "$greenBackground = $reset"
 fun switchPlayer() {
     currentPlayer = if (currentPlayer == player1) player2 else player1
 }
@@ -113,28 +153,6 @@ fun makeMove(board: MutableMap<Pair<Int, Int>, String>, x: Int, y: Int) {
 
 }
 
-fun ifWinner (){
-    println("ifWinner")
-    val pointsPlayer1 = countPoints(reversi, player1)
-    val pointsPlayer2 = countPoints(reversi, player2)
-    println(reversi.containsValue("="))
-    println(reversi.containsValue("+"))
-
-    if (!hasAMove(reversi, player1) && !hasAMove(reversi, player2)){
-        println("Game over! Points:")
-        println("$player1: $pointsPlayer1 points")
-        println("$player2: $pointsPlayer2 points")
-    } else if (reversi.containsValue("+") && reversi.containsValue("-")) {
-        // Game over - count and print points
-        printBoard(reversi)
-    } else {
-        println("Game over! Points:")
-        println("$player1: $pointsPlayer1 points")
-        println("$player2: $pointsPlayer2 points")
-    }
-}
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 fun main() {
 
 
@@ -142,10 +160,10 @@ fun main() {
 
 
     // Place some initial pieces on the board for demonstration purposes
-    reversi[Pair(3, 3)] = "+"
-    reversi[Pair(3, 4)] = "="
-    reversi[Pair(4, 3)] = "="
-    reversi[Pair(4, 4)] = "+"
+    reversi[Pair(3, 3)] = player1
+    reversi[Pair(3, 4)] = player2
+    reversi[Pair(4, 3)] = player2
+    reversi[Pair(4, 4)] = player1
 
 
     printBoard(reversi)
