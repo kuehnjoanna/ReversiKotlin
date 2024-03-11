@@ -172,7 +172,7 @@ fun main() {
     printBoard(reversi)
 
 
-    while (countPoints(reversi, currentPlayer) > 0) {
+    while (countPoints(reversi, currentPlayer) > 0 ) {
         // Example usage after getting user input for x and y
         println("$currentPlayer, make your move")
         val x = readLine()?.toIntOrNull() ?: continue
@@ -190,6 +190,9 @@ fun main() {
 
         switchPlayer()
 
+        if (!reversi.containsValue(" - ")){
+            break
+        }
        // if (!hasAMove(reversi, player1) && !hasAMove(reversi, player2)) {
       //      break
        // }
