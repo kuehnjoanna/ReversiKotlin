@@ -1,4 +1,3 @@
-
 //------------BOARD---------------
 val red = "\u001b[31m"
 val redBackground = "\u001b[41m"
@@ -6,8 +5,9 @@ val greenBackground = "\u001b[42m"
 val green = "\u001b[32m"
 val reset = "\u001b[0m"
 var counter = 0
-val frame = "█▄█▀▀█▄█▀▀█▄█▀▀"
+val frameDown = "█▄█▀▀█▄█▀▀█▄█▀▀"
 val frameUp = "█▀▀█▄▄█▀▀█▄▄█▀▀█▄▄"
+val frameSide = "$red█${reset}"
 fun initializeBoard(): MutableMap<Pair<Int, Int>, String> {
 
     val reversi = mutableMapOf<Pair<Int, Int>, String>()
@@ -31,20 +31,20 @@ fun printBoard(board: Map<Pair<Int, Int>, String>) {
     println("  Y  ")
     for (row in 0 until 1) {
         for (col in 0 until 1) {
-
             print("  ")
         }
         print(
             """
       $red$frameUp$frameUp$frameUp█▀▀█$reset
         """.trimIndent()
-        )}
+        )
+    }
     print("\n")
-    for (row in 1 until 8) {
+    for (row in 0 until 8) {
         print(
             """
-              $red█${reset}┌─────┐┌─────┐┌─────┐┌─────┐┌─────┐┌─────┐┌─────┐┌─────┐${red}█$reset
-            $green$row $red█$reset
+              ${frameSide}┌─────┐┌─────┐┌─────┐┌─────┐┌─────┐┌─────┐┌─────┐┌─────┐$frameSide
+            $green$row $frameSide
         """.trimIndent()
         )
 
@@ -58,14 +58,14 @@ fun printBoard(board: Map<Pair<Int, Int>, String>) {
 
             print("|")
         }
-        print("$red█$reset")
-        print("\n $red █${reset}└─────┘└─────┘└─────┘└─────┘└─────┘└─────┘└─────┘└─────┘")
-        println("$red█$reset")
+        print("$frameSide")
+        print("\n  ${frameSide}└─────┘└─────┘└─────┘└─────┘└─────┘└─────┘└─────┘└─────┘")
+        println(frameSide)
 
     }
 
 
-    print(red + "  $frame$frame$frame█▄█▀▀█▄█▀▀█▄█" + reset)
+    print(red + "  $frameDown$frameDown${frameDown}█▄█▀▀█▄█▀▀█▄█" + reset)
 
     println("\nX")
 
@@ -73,9 +73,10 @@ fun printBoard(board: Map<Pair<Int, Int>, String>) {
 
 //--------------PLAYERS---------------
 //var player1name = println("Enter player 1 name: ")
-var player1 = "$redBackground + $reset"
+var player1 = "$redBackground ■ $reset"
+
 //var player2name = println("Enter player Two name: ")
-var player2 = "$greenBackground = $reset"
+var player2 = "$greenBackground ■ $reset"
 fun switchPlayer() {
     currentPlayer = if (currentPlayer == player1) player2 else player1
 }
@@ -85,6 +86,7 @@ val reversi = initializeBoard()
 
 
 var currentPlayer = player1
+
 //---------------------VALID MOVES------------------------
 // valid move condition, checks if there are any on the board
 fun hasAMove(board: Map<Pair<Int, Int>, String>, player: String): Boolean {
@@ -105,6 +107,7 @@ fun hasValidMove(board: Map<Pair<Int, Int>, String>, x: Int, y: Int): Boolean {
     }
     return true
 }
+
 //-------POINTS------
 fun countPoints(board: Map<Pair<Int, Int>, String>, player: String): Int {
     return board.count { it.value == player }
@@ -125,7 +128,7 @@ fun makeMove(board: MutableMap<Pair<Int, Int>, String>, x: Int, y: Int) {
 
             var currentX = x + dx
             var currentY = y + dy
-            var tilesToFlip = mutableListOf<Pair<Int, Int>>()
+            val tilesToFlip = mutableListOf<Pair<Int, Int>>()
 
             // Check for tiles to flip
             val opponentPlayer = if (currentPlayer == player1) player2 else player1
@@ -175,21 +178,21 @@ fun main() {
         val x = readLine()?.toIntOrNull() ?: continue
         val y = readLine()?.toIntOrNull() ?: continue
 
-        if (!hasValidMove(reversi, x, y)) {
-            println("Invalid move. Try again.")
-            continue
-        }
+       // if (!hasValidMove(reversi, x, y)) {
+         //   println("Invalid move. Try again.")
+           // continue
+
+        // }
 
         makeMove(reversi, x, y)
 
-       printBoard(reversi)
+        printBoard(reversi)
 
         switchPlayer()
 
-        if (!hasAMove(reversi, player1) && !hasAMove(reversi, player2)) {
-            break
-        }
-
+       // if (!hasAMove(reversi, player1) && !hasAMove(reversi, player2)) {
+      //      break
+       // }
 
 
     }
